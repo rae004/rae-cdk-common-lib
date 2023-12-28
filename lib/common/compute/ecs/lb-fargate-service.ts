@@ -13,9 +13,9 @@ import {
   ApplicationLoadBalancedFargateService,
   ApplicationLoadBalancedFargateServiceProps,
 } from 'aws-cdk-lib/aws-ecs-patterns';
-import { s3Construct } from '@/lib/common/storage/s3';
-import { FargateTaskDefinitionConstruct } from '@/lib/common/compute/ecs/fargate-task-definition';
-import { ContainerDefinitionConstruct } from '@/lib/common/compute/ecs/container-definition';
+import { s3Construct } from '../../storage';
+import { FargateTaskDefinitionConstruct } from './fargate-task-definition';
+import { ContainerDefinitionConstruct } from './container-definition';
 
 export interface LbFargateServiceProps {
   containerDefinitionProps: Omit<ContainerDefinitionProps, 'taskDefinition'> & {

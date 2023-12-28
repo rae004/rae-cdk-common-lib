@@ -23,11 +23,6 @@
     "typeRoots": [
       "./node_modules/@types"
     ],
-    "paths": {
-      "@/bin/*": ["bin/*"],
-      "@/lib/*": ["lib/*"],
-      "@/test/*": ["test/*"],
-    }
   },
   "exclude": [
     "node_modules",

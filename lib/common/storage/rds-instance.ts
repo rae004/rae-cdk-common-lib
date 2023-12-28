@@ -7,7 +7,6 @@ import {
   InstanceSize,
   InstanceType,
   SubnetType,
-  Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import {
   Credentials,
@@ -16,12 +15,12 @@ import {
   DatabaseInstanceProps,
   MysqlEngineVersion,
 } from 'aws-cdk-lib/aws-rds';
-import { SecretConstruct } from '@/lib/common/auth/secret';
+import { SecretConstruct } from '../auth';
 import {
   DEFAULT_RDS_DB_NAME,
   DEFAULT_RDS_PORT,
   DEFAULT_RDS_USER,
-} from '@/lib/common/shared/constants';
+} from '../shared';
 
 export interface RdsInstanceProps {
   rdsInstanceProps: Omit<DatabaseInstanceProps, 'engine'>;

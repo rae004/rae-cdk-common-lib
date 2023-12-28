@@ -1,5 +1,5 @@
 {
-  "name": "rae-cdk-common-lib",
+  "name": "@rae004/rae-cdk-common-lib",
   "version": "0.0.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
+    "@types/lodash": "^4.14.202",
     "@types/node": "20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
@@ -26,5 +27,27 @@
   "peerDependencies": {
     "aws-cdk-lib": "2.110.0",
     "constructs": "^10.0.0"
-  }
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "description": "You should explore the contents of this project. It demonstrates a CDK Construct Library that includes a construct (`RaeCdkCommonLib`) which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/rae004/rae-cdk-common-lib.git"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "author": "Robert Engel",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/rae004/rae-cdk-common-lib/issues"
+  },
+  "homepage": "https://github.com/rae004/rae-cdk-common-lib#readme"
 }

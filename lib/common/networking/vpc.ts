@@ -7,7 +7,7 @@ import {
   Vpc,
   VpcProps,
 } from 'aws-cdk-lib/aws-ec2';
-import { s3Construct } from '@/lib/common/storage/s3';
+import { s3Construct } from '../storage';
 
 export interface VpcConstructProps {
   vpcProps?: VpcProps;
