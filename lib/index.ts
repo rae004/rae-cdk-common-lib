@@ -1,20 +1,14 @@
 /** COMPUTE */
-export * from './common/compute/ecs/ecs-cluster'
-export * from './common/compute/ecs/fargate-task-definition'
-export * from './common/compute/ecs/container-definition'
-export * from './common/compute/ecs/lb-fargate-service'
+export * from './common/compute/ecs';
 
 /** STORAGE */
-export * from './common/storage/efs'
-export * from './common/storage/s3'
-export * from './common/storage/rds-instance'
-export * from './common/storage/rds-cluster'
+export * from './common/storage';
 
 /** AUTH */
-export * from './common/auth/secret'
+export * from './common/auth';
 
 /** NETWORKING */
-export * from './common/networking/vpc'
+export * from './common/networking';
 
 /** SHARED */
-export * from './common/shared/constants'
+export * from './common/shared';
