@@ -7,8 +7,13 @@ import {
   BucketEncryption,
   BucketProps,
 } from 'aws-cdk-lib/aws-s3';
+import { AppProps } from '@/lib/common/shared/types';
 
-const defaultS3BucketConfig = {
+interface s3ConstructsProps extends AppProps {
+  s3BucketProps?: BucketProps;
+}
+
+const defaultS3BucketConfig: BucketProps = {
   encryption: BucketEncryption.S3_MANAGED,
   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
   enforceSSL: true,
@@ -17,11 +22,19 @@ const defaultS3BucketConfig = {
 };
 export class s3Construct extends Construct {
   readonly bucket: Bucket;
-  constructor(scope: Construct, id: string, props?: BucketProps) {
+  constructor(scope: Construct, id: string, props: s3ConstructsProps) {
     super(scope, id);
 
-    props = merge(defaultS3BucketConfig, props);
+    const appName = `${props.appName}-${props.deploymentEnvironment}`;
 
-    this.bucket = new Bucket(this, 's3-bucket', props);
+    const bucketName = props?.s3BucketProps?.bucketName
+      ? `${appName}-${props.s3BucketProps.bucketName}-bucket`
+      : `${appName}-bucket`;
+
+    const s3Props = merge(defaultS3BucketConfig, props?.s3BucketProps, {
+      bucketName: bucketName,
+    });
+
+    this.bucket = new Bucket(this, `${appName}-s3-bucket`, s3Props);
   }
 }

@@ -13,11 +13,12 @@ import {
   ApplicationLoadBalancedFargateService,
   ApplicationLoadBalancedFargateServiceProps,
 } from 'aws-cdk-lib/aws-ecs-patterns';
-import { s3Construct } from '../../storage';
-import { FargateTaskDefinitionConstruct } from './fargate-task-definition';
-import { ContainerDefinitionConstruct } from './container-definition';
+import { s3Construct } from '@/lib/common/storage';
+import { FargateTaskDefinitionConstruct } from '@/lib/common/compute/ecs/fargate-task-definition';
+import { ContainerDefinitionConstruct } from '@/lib/common/compute/ecs/container-definition';
+import { AppProps } from '@/lib/common/shared/types';
 
-export interface LbFargateServiceProps {
+export interface LbFargateServiceProps extends AppProps {
   containerDefinitionProps: Omit<ContainerDefinitionProps, 'taskDefinition'> & {
     mountPoints?: MountPoint[];
   };
@@ -57,22 +58,35 @@ export class LbFargateServiceConstruct extends Construct {
   constructor(scope: Construct, id: string, props: LbFargateServiceProps) {
     super(scope, id);
 
+    const appName = `${props.appName}-${props.deploymentEnvironment}`;
+    const appProps = {
+      deploymentEnvironment: props.deploymentEnvironment,
+      appName: props.appName,
+    };
+
     // Create Fargate Task Definition.
+    const fargateTaskDefinitionProps = merge(
+      appProps,
+      props?.fargateTaskDefinitionProps,
+    );
     const { fargateTaskDefinition } = new FargateTaskDefinitionConstruct(
       this,
-      'fargate-task-definition',
-      {
-        ...props?.fargateTaskDefinitionProps,
-      },
+      `${appName}-fargate-task-definition`,
+      fargateTaskDefinitionProps,
     );
 
     // Create Container Definition for Fargate Task Definition.
-    new ContainerDefinitionConstruct(this, 'ecs-container-definition', {
+    const containerDefinitionProps = merge(appProps, {
       containerDefinitionProps: {
         taskDefinition: fargateTaskDefinition,
         ...props.containerDefinitionProps,
       },
     });
+    new ContainerDefinitionConstruct(
+      this,
+      `${appName}-ecs-container-definition`,
+      containerDefinitionProps,
+    );
 
     // Create a load-balanced Fargate service and make it public.
     const fargateServicePropsWithTaskDefinition = {
@@ -85,7 +99,7 @@ export class LbFargateServiceConstruct extends Construct {
     );
     this.lbFargateService = new ApplicationLoadBalancedFargateService(
       this,
-      'lb-fargate-service',
+      `${appName}-lb-fargate-service`,
       lbFargateServiceProps,
     );
 
@@ -95,15 +109,16 @@ export class LbFargateServiceConstruct extends Construct {
         props.lbAccessLogProps;
       const serverAccessLogsBucket = new s3Construct(
         this,
-        'lb-fargate-server-access-log',
-        serverAccessLogsBucketProps,
+        `${appName}-lb-fargate-server-access-log`,
+        { ...serverAccessLogsBucketProps, ...appProps },
       ).bucket;
       const loadBalancerAccessLogBucket = new s3Construct(
         this,
-        'lb-fargate-access-log',
+        `${appName}-lb-fargate-access-log`,
         {
           serverAccessLogsBucket: serverAccessLogsBucket,
           ...loadBalancerAccessLogBucketProps,
+          ...appProps,
         },
       ).bucket;
       this.lbFargateService.loadBalancer.logAccessLogs(
@@ -124,10 +139,10 @@ export class LbFargateServiceConstruct extends Construct {
 
     const targetScaling =
       this.lbFargateService.service.autoScaleTaskCount(enableScalingProps);
-    targetScaling.scaleOnCpuUtilization('cpu-scaling', {
+    targetScaling.scaleOnCpuUtilization(`${appName}-cpu-scaling`, {
       targetUtilizationPercent: targetUtilizationPercentCpu,
     });
-    targetScaling.scaleOnMemoryUtilization('memory-scaling', {
+    targetScaling.scaleOnMemoryUtilization(`${appName}-memory-scaling`, {
       targetUtilizationPercent: targetUtilizationPercentMem,
     });
   }

@@ -7,9 +7,10 @@ import {
   Vpc,
   VpcProps,
 } from 'aws-cdk-lib/aws-ec2';
-import { s3Construct } from '../storage';
+import { s3Construct } from '@/lib/common/storage';
+import { AppProps } from '@/lib/common/shared';
 
-export interface VpcConstructProps {
+export interface VpcConstructProps extends AppProps {
   vpcProps?: VpcProps;
   s3BucketProps?: BucketProps;
   flowLogProps?: {
@@ -41,8 +42,14 @@ const getDefaultVpcConfig: VpcProps = {
 
 export class VpcConstruct extends Construct {
   readonly vpc: Vpc;
-  constructor(scope: Construct, id: string, props?: VpcConstructProps) {
+  constructor(scope: Construct, id: string, props: VpcConstructProps) {
     super(scope, id);
+
+    const appName = `${props.appName}-${props.deploymentEnvironment}-vpc`;
+    const appProps = {
+      appName: props.appName,
+      deploymentEnvironment: props.deploymentEnvironment,
+    };
 
     let vpcFlowLogProps = {};
     if (props?.flowLogProps) {
@@ -50,12 +57,13 @@ export class VpcConstruct extends Construct {
         props.flowLogProps;
       const serverAccessLogsBucket = new s3Construct(
         this,
-        'vpc-flow-logs-server-access-log',
-        serverAccessLogBucketProps,
+        `${appName}-flow-logs-server-access-log`,
+        { ...serverAccessLogBucketProps, ...appProps },
       ).bucket;
-      const vpcFlowLogBucket = new s3Construct(this, 'vpc-flow-logs', {
+      const vpcFlowLogBucket = new s3Construct(this, `${appName}-flow-logs`, {
         serverAccessLogsBucket: serverAccessLogsBucket,
         ...vpcFlowLogBucketProps,
+        ...appProps,
       }).bucket;
 
       vpcFlowLogProps = {
@@ -63,7 +71,7 @@ export class VpcConstruct extends Construct {
           s3: {
             destination: FlowLogDestination.toS3(
               vpcFlowLogBucket,
-              'vpc-access-log',
+              `${appName}-access-log`,
             ),
           },
         },

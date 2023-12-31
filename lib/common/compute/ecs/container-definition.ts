@@ -8,19 +8,14 @@ import {
   MountPoint,
   TaskDefinition,
 } from 'aws-cdk-lib/aws-ecs';
+import { AppProps } from '@/lib/common/shared/types';
 
-export interface ContainerDefinitionConstructProps {
+export interface ContainerDefinitionConstructProps extends AppProps {
   containerDefinitionProps: ContainerDefinitionProps & {
     taskDefinition: TaskDefinition | FargateTaskDefinition;
     mountPoints?: MountPoint[];
   };
 }
-
-const defaultContainerDefinitionConfig: Partial<ContainerDefinitionProps> = {
-  logging: LogDriver.awsLogs({
-    streamPrefix: 'ecs-container-definition',
-  }),
-};
 
 export class ContainerDefinitionConstruct extends Construct {
   readonly containerDefinition: ContainerDefinition;
@@ -31,13 +26,21 @@ export class ContainerDefinitionConstruct extends Construct {
   ) {
     super(scope, id);
 
+    const appName = `${props.appName}-${props.deploymentEnvironment}-container-definition`;
+
+    const defaultContainerDefinitionConfig = {
+      logging: LogDriver.awsLogs({
+        streamPrefix: appName,
+      }),
+    };
+
     const containerDefinitionProps: ContainerDefinitionProps = merge(
       defaultContainerDefinitionConfig,
       props.containerDefinitionProps,
     );
     this.containerDefinition = new ContainerDefinition(
       this,
-      'ecs-container-definition',
+      appName,
       containerDefinitionProps,
     );
 

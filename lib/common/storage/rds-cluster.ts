@@ -11,14 +11,15 @@ import {
 } from 'aws-cdk-lib/aws-rds';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { SecretConstruct } from '../auth';
+import { SecretConstruct } from '@/lib/common/auth';
 import {
+  AppProps,
   DEFAULT_RDS_DB_NAME,
   DEFAULT_RDS_PORT,
   DEFAULT_RDS_USER,
-} from '../shared';
+} from '@/lib/common/shared';
 
-export interface RdsConstructProps {
+export interface RdsConstructProps extends AppProps {
   rdsClusterProps: Partial<DatabaseClusterProps> & { vpc: Vpc };
   dbUserName?: string;
 }
@@ -54,7 +55,12 @@ export class RdsClusterConstruct extends Construct {
   constructor(scope: Construct, id: string, props: RdsConstructProps) {
     super(scope, id);
 
-    this.dbSecret = new SecretConstruct(this, 'db-cluster-secret').secret;
+    const appName = `${props.appName}-${props.deploymentEnvironment}`;
+
+    this.dbSecret = new SecretConstruct(this, `${appName}-db-cluster-secret`, {
+      deploymentEnvironment: props.deploymentEnvironment,
+      appName: props.appName,
+    }).secret;
 
     const dbClusterProps: DatabaseClusterProps = merge(
       defaultRdsClusterProps,
@@ -63,10 +69,15 @@ export class RdsClusterConstruct extends Construct {
           props.dbUserName ?? DEFAULT_RDS_USER,
           this.dbSecret.secretValue,
         ),
+        databaseName: `${appName.replace('-', '')}${DEFAULT_RDS_DB_NAME}`,
       },
       props.rdsClusterProps,
     );
 
-    this.db = new DatabaseCluster(this, 'rds-cluster', dbClusterProps);
+    this.db = new DatabaseCluster(
+      this,
+      `${appName}-rds-cluster`,
+      dbClusterProps,
+    );
   }
 }

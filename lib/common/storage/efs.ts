@@ -13,8 +13,9 @@ import {
   PolicyStatement,
   PolicyStatementProps,
 } from 'aws-cdk-lib/aws-iam';
+import { AppProps } from '@/lib/common/shared/types';
 
-export interface EfsConstructProps {
+export interface EfsConstructProps extends AppProps {
   fileSystemProps: FileSystemProps;
 }
 
@@ -41,11 +42,17 @@ export class EfsConstruct extends Construct {
   constructor(scope: Construct, id: string, props: EfsConstructProps) {
     super(scope, id);
 
+    const appName = `${props.appName}-${props.deploymentEnvironment}`;
+
     const fileSystemProps = merge(
       defaultFileSystemProps,
       props.fileSystemProps,
     );
-    this.fileSystem = new FileSystem(this, 'efs-file-system', fileSystemProps);
+    this.fileSystem = new FileSystem(
+      this,
+      `${appName}efs-file-system`,
+      fileSystemProps,
+    );
 
     this.fileSystem.addToResourcePolicy(
       new PolicyStatement(defaultEfsResourcePolicyStatement),
