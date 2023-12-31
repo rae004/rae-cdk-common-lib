@@ -4,7 +4,7 @@ import {
   FargateTaskDefinition,
   FargateTaskDefinitionProps,
 } from 'aws-cdk-lib/aws-ecs';
-import { AppProps } from '@/lib/common/shared/types';
+import { AppProps } from '../../shared';
 
 export interface FargateTaskDefinitionConstructProps extends AppProps {
   fargateTaskDefinitionProps?: FargateTaskDefinitionProps;

@@ -7,7 +7,7 @@ import {
   BucketEncryption,
   BucketProps,
 } from 'aws-cdk-lib/aws-s3';
-import { AppProps } from '@/lib/common/shared/types';
+import { AppProps } from '../shared';
 
 interface s3ConstructsProps extends AppProps {
   s3BucketProps?: BucketProps;

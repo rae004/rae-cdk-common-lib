@@ -15,13 +15,13 @@ import {
   DatabaseInstanceProps,
   MysqlEngineVersion,
 } from 'aws-cdk-lib/aws-rds';
-import { SecretConstruct } from '@/lib/common/auth';
+import { SecretConstruct } from '../auth';
 import {
   AppProps,
   DEFAULT_RDS_DB_NAME,
   DEFAULT_RDS_PORT,
   DEFAULT_RDS_USER,
-} from '@/lib/common/shared';
+} from '../shared';
 
 export interface RdsInstanceProps extends AppProps {
   rdsInstanceProps: Omit<DatabaseInstanceProps, 'engine'>;

@@ -2,7 +2,7 @@ import { merge } from 'lodash';
 import { Construct } from 'constructs';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ClusterProps } from 'aws-cdk-lib/aws-ecs';
-import { AppProps } from '@/lib/common/shared/types';
+import { AppProps } from '../../shared';
 
 export interface EcsClusterConstructProps extends AppProps {
   clusterProps: ClusterProps & { vpc: Vpc };

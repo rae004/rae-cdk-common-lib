@@ -11,13 +11,13 @@ import {
 } from 'aws-cdk-lib/aws-rds';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { SecretConstruct } from '@/lib/common/auth';
+import { SecretConstruct } from '../auth';
 import {
   AppProps,
   DEFAULT_RDS_DB_NAME,
   DEFAULT_RDS_PORT,
   DEFAULT_RDS_USER,
-} from '@/lib/common/shared';
+} from '../shared';
 
 export interface RdsConstructProps extends AppProps {
   rdsClusterProps: Partial<DatabaseClusterProps> & { vpc: Vpc };

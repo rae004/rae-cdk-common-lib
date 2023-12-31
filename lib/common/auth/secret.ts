@@ -2,7 +2,7 @@ import { merge } from 'lodash';
 import { Construct } from 'constructs';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Secret, SecretProps } from 'aws-cdk-lib/aws-secretsmanager';
-import { AppProps } from '@/lib/common/shared/types';
+import { AppProps } from '../shared';
 
 export interface SecretConstructProps extends AppProps {
   secretProps?: SecretProps;

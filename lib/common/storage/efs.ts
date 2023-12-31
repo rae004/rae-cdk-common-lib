@@ -13,7 +13,7 @@ import {
   PolicyStatement,
   PolicyStatementProps,
 } from 'aws-cdk-lib/aws-iam';
-import { AppProps } from '@/lib/common/shared/types';
+import { AppProps } from '../shared';
 
 export interface EfsConstructProps extends AppProps {
   fileSystemProps: FileSystemProps;
