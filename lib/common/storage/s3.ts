@@ -28,13 +28,14 @@ export class s3Construct extends Construct {
     const appName = `${props.appName}-${props.deploymentEnvironment}`;
 
     const bucketName = props?.s3BucketProps?.bucketName
-      ? `${appName}-${props.s3BucketProps.bucketName}-bucket`
+      ? `${props.s3BucketProps.bucketName}-bucket`
       : `${appName}-bucket`;
+    console.log('bucketName', bucketName, scope.node.path);
 
     const s3Props = merge(defaultS3BucketConfig, props?.s3BucketProps, {
       bucketName: bucketName,
     });
 
-    this.bucket = new Bucket(this, `${appName}-s3-bucket`, s3Props);
+    this.bucket = new Bucket(this, bucketName, s3Props);
   }
 }

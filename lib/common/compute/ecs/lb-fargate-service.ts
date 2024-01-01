@@ -110,14 +110,16 @@ export class LbFargateServiceConstruct extends Construct {
       const serverAccessLogsBucket = new s3Construct(
         this,
         `${appName}-lb-fargate-server-access-log`,
-        { ...serverAccessLogsBucketProps, ...appProps },
+        { s3BucketProps: serverAccessLogsBucketProps, ...appProps },
       ).bucket;
       const loadBalancerAccessLogBucket = new s3Construct(
         this,
         `${appName}-lb-fargate-access-log`,
         {
-          serverAccessLogsBucket: serverAccessLogsBucket,
-          ...loadBalancerAccessLogBucketProps,
+          s3BucketProps: {
+            serverAccessLogsBucket: serverAccessLogsBucket,
+            ...loadBalancerAccessLogBucketProps,
+          },
           ...appProps,
         },
       ).bucket;

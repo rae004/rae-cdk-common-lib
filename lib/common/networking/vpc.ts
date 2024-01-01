@@ -1,6 +1,10 @@
 import { merge } from 'lodash';
 import { Construct } from 'constructs';
-import { BucketProps } from 'aws-cdk-lib/aws-s3';
+import {
+  BlockPublicAccess,
+  BucketEncryption,
+  BucketProps,
+} from 'aws-cdk-lib/aws-s3';
 import {
   FlowLogDestination,
   SubnetType,
@@ -9,6 +13,8 @@ import {
 } from 'aws-cdk-lib/aws-ec2';
 import { s3Construct } from '../storage';
 import { AppProps } from '../shared';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { RemovalPolicy } from 'aws-cdk-lib';
 
 export interface VpcConstructProps extends AppProps {
   vpcProps?: VpcProps;
@@ -55,14 +61,25 @@ export class VpcConstruct extends Construct {
     if (props?.flowLogProps) {
       const { serverAccessLogBucketProps, vpcFlowLogBucketProps } =
         props.flowLogProps;
-      const serverAccessLogsBucket = new s3Construct(
+      const serverAccessLogsBucket = new Bucket(
         this,
-        `${appName}-flow-logs-server-access-log`,
-        { ...serverAccessLogBucketProps, ...appProps },
-      ).bucket;
+        `${appName}-server-access-flow-log`,
+        {
+          bucketName: `${appName}-server-access-flow-log`,
+          encryption: BucketEncryption.S3_MANAGED,
+          blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+          enforceSSL: true,
+          removalPolicy: RemovalPolicy.DESTROY,
+          autoDeleteObjects: true,
+          ...serverAccessLogBucketProps,
+        },
+      );
+
       const vpcFlowLogBucket = new s3Construct(this, `${appName}-flow-logs`, {
-        serverAccessLogsBucket: serverAccessLogsBucket,
-        ...vpcFlowLogBucketProps,
+        s3BucketProps: {
+          serverAccessLogsBucket: serverAccessLogsBucket,
+          ...vpcFlowLogBucketProps,
+        },
         ...appProps,
       }).bucket;
 
