@@ -30,7 +30,6 @@ export class s3Construct extends Construct {
     const bucketName = props?.s3BucketProps?.bucketName
       ? `${props.s3BucketProps.bucketName}-bucket`
       : `${appName}-bucket`;
-    console.log('bucketName', bucketName, scope.node.path);
 
     const s3Props = merge(defaultS3BucketConfig, props?.s3BucketProps, {
       bucketName: bucketName,
